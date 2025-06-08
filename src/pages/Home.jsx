@@ -1,16 +1,37 @@
-import rigoImageUrl from "../assets/img/rigo-baby.jpg";
-import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import React, { useEffect, useState } from "react";
+import { fetchEntities } from "../services/swapiService";
+import EntityCard from "../components/Card"; // Asegúrate que el componente Card está en components
+import { Container } from "react-bootstrap";
 
-export const Home = () => {
+const Home = () => {
+  const [people, setPeople] = useState([]);
+  const [planets, setPlanets] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
 
-  const {store, dispatch} =useGlobalReducer()
+  useEffect(() => {
+    fetchEntities("people").then(setPeople);
+    fetchEntities("planets").then(setPlanets);
+    fetchEntities("vehicles").then(setVehicles);
+  }, []);
 
-	return (
-		<div className="text-center mt-5">
-			<h1>Hello Rigo!!</h1>
-			<p>
-				<img src={rigoImageUrl} />
-			</p>
-		</div>
-	);
-}; 
+  const renderRow = (title, items, type) => (
+    <div className="mb-4">
+      <h4>{title}</h4>
+      <div className="d-flex overflow-auto">
+        {items.map((item) => (
+          <EntityCard key={item.uid} entity={item} type={type} />
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <Container className="mt-4">
+      {renderRow("Characters", people, "people")}
+      {renderRow("Planets", planets, "planets")}
+      {renderRow("Vehicles", vehicles, "vehicles")}
+    </Container>
+  );
+};
+
+export default Home;

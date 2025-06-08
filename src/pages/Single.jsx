@@ -1,37 +1,48 @@
-// Import necessary hooks and components from react-router-dom and other libraries.
-import { Link, useParams } from "react-router-dom";  // To use link for navigation and useParams to get URL parameters
-import PropTypes from "prop-types";  // To define prop types for this component
-import rigoImageUrl from "../assets/img/rigo-baby.jpg"  // Import an image asset
-import useGlobalReducer from "../hooks/useGlobalReducer";  // Import a custom hook for accessing the global state
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { fetchEntityDetails } from "../services/swapiService";
+import { Container, Row, Col } from "react-bootstrap";
 
-// Define and export the Single component which displays individual item details.
-export const Single = props => {
-  // Access the global state using the custom hook.
-  const { store } = useGlobalReducer()
+const Single = () => {
+  const { type, uid } = useParams();
+  const [entity, setEntity] = useState(null);
 
-  // Retrieve the 'theId' URL parameter using useParams hook.
-  const { theId } = useParams()
-  const singleTodo = store.todos.find(todo => todo.id === parseInt(theId));
+  useEffect(() => {
+    fetchEntityDetails(type, uid).then(setEntity);
+  }, [type, uid]);
+
+  if (!entity) return <p className="text-center mt-5">Loading...</p>;
+
+  const { properties, description } = entity;
 
   return (
-    <div className="container text-center">
-      {/* Display the title of the todo element dynamically retrieved from the store using theId. */}
-      <h1 className="display-4">Todo: {singleTodo?.title}</h1>
-      <hr className="my-4" />  {/* A horizontal rule for visual separation. */}
-
-      {/* A Link component acts as an anchor tag but is used for client-side routing to prevent page reloads. */}
-      <Link to="/">
-        <span className="btn btn-primary btn-lg" href="#" role="button">
-          Back home
-        </span>
-      </Link>
-    </div>
+    <Container className="mt-5 text-light">
+      <Row>
+        <Col md={4}>
+          <img
+            className="img-fluid rounded"
+            src={`https://starwars-visualguide.com/assets/img/${type}/${uid}.jpg`}
+            onError={(e) => {
+              e.target.src =
+                "https://starwars-visualguide.com/assets/img/placeholder.jpg";
+            }}
+            alt={properties.name}
+          />
+        </Col>
+        <Col md={8}>
+          <h2>{properties.name}</h2>
+          <p>{description || "No description available."}</p>
+          <Row className="mt-4">
+            {Object.entries(properties).map(([key, val]) => (
+              <Col xs={6} md={4} key={key} className="mb-2">
+                <strong>{key.replaceAll("_", " ")}:</strong> {val}
+              </Col>
+            ))}
+          </Row>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
-// Use PropTypes to validate the props passed to this component, ensuring reliable behavior.
-Single.propTypes = {
-  // Although 'match' prop is defined here, it is not used in the component.
-  // Consider removing or using it as needed.
-  match: PropTypes.object
-};
+export default Single;
