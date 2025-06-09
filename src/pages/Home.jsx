@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchEntities } from "../services/swapiService";
-import EntityCard from "../components/Card"; // Asegúrate que el componente Card está en components
+import EntityCard from "../components/Card"; 
 import { Container } from "react-bootstrap";
 
 const Home = () => {
