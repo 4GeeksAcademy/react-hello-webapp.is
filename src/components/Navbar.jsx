@@ -10,7 +10,7 @@ const Navigation = () => {
     <Navbar bg="dark" variant="dark" expand="lg">
       <Container>
         <Link to="/" className="navbar-brand">
-          SWAPI App
+          Star wars
         </Link>
         <Nav className="ms-auto">
           <Dropdown>
